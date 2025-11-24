@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { FileText, Send } from "lucide-react"
+import { FileText, Send, CheckCircle } from "lucide-react"
+import { useState } from "react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -27,7 +28,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 export default function NewApplication() {
-  const { toast } = useToast()
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -46,11 +47,9 @@ export default function NewApplication() {
 
   const onSubmit = (data: FormValues) => {
     console.log("Form submitted:", data)
-    toast({
-      title: "Application Submitted!",
-      description: "We'll review your application and get back to you soon.",
-    })
+    setShowSuccess(true)
     form.reset()
+    setTimeout(() => setShowSuccess(false), 5000)
   }
 
   return (
@@ -65,6 +64,16 @@ export default function NewApplication() {
             Fill out the form below to submit your application for quantum services
           </p>
         </div>
+
+        {showSuccess && (
+          <Alert className="mb-6 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+            <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <AlertTitle className="text-green-800 dark:text-green-300">Application Submitted!</AlertTitle>
+            <AlertDescription className="text-green-700 dark:text-green-400">
+              We'll review your application and get back to you soon.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
           <CardHeader>
